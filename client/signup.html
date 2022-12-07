@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viet Luther Market</title>
+    <link
+      rel="stylesheet"
+      href="css/bootstrap.min.css"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div id="title">
+        <h1>WELCOME TO VIET LUTHER MARKET</h1>
+    </div>
+    <h2>SIGN IN  or SIGN UP</h2>
+    <div id="forms">
+        <div id="signup">
+            <form action="/signup" method="POST" class="form">
+                <div class="">
+                  <label class="">username</label>
+                  <input type="text" name="signup-name" required/>
+                </div>
+                <div class="">
+                  <label class="">password</label>
+                  <input type="text" name="signup-pw" required/>
+                </div>
+                <div class="">
+                    <label class="">email</label>
+                    <input type="text" name="signup-pw" required/>
+                </div>
+                <div class="">
+                    <label class="">phone number</label>
+                    <input type="text" name="signup-pw" required/>
+                </div>
+                <div class="">
+                    <label class="">location</label>
+                    <input type="text" name="signup-pw" required/>
+                </div>
+                <div class="">
+                  <input type="submit" class="mui-btn mui-btn--primary" onclick="SignIn()" value="Sign Up" disable/>
+                </div>
+              </form>
+        </div>
+    </div>
+    <script type="text/javascript" defer="defer" src="js/control.js"></script>
+  </body>
+</html>
