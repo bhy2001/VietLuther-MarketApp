@@ -1,10 +1,11 @@
 from __future__ import annotations
-from message_app.db.db import DB as db
 import json
 import time
 from typing import Union, List
 from sqlalchemy import func, desc, asc, not_, and_, true
 from sqlalchemy.sql import label
+from config import db, mm
+
 
 
 class User(db.Model):
@@ -181,7 +182,7 @@ class BuyRequest(db.Model):
     __tablename__ = 'buy_request'
     id = db.Column(db.Integer, primary_key=True)
     initiator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     request_status = db.Column(db.String, nullable=False, default="available") # 3 status: available, pending, process, accepted, rejected
     request_time = db.Column(db.Integer, nullable=False)
     accepted_time = db.Column(db.Integer)
@@ -264,7 +265,13 @@ class BuyRequest(db.Model):
         return all_requests_list
 
     @classmethod
-    def get_all_request_by_reciever(cls, receiver_id: int, request_status: str) -> Union[BuyRequest, None]:
+    def get_request_by_request_id(cls,request_id:int) -> Union[BuyRequest, None]:
+        request = BuyRequest.query.filter(
+                BuyRequest.id == request_id)
+        return request
+
+    @classmethod
+    def get_all_request_by_reciever(cls, receiver_id: int, request_status: str) -> list:
         """Return latest pending request between two reciever"""
         all_requests = BuyRequest.query.filter(
                 BuyRequest.receiver_id == receiver_id,
@@ -367,17 +374,26 @@ class item (db.model):
                 })
         return all_items_list
     @classmethod
-    def insert(cls, new_request: item) -> None:
-        db.session.add(new_request)
+    def insert(cls, new_item: item) -> None:
+        db.session.add(new_item)
         db.session.commit()
 
     @classmethod
-    def delete(cls, request_id: int) -> Union[item, None]:
+    def delete_request_id(cls, request_id: int) -> Union[item, None]:
         # Delete and return an user from the database. Return None if the user doesn't exist
         request = item.query.filter(
                 item.request_id == request_id,
                 ).order_by(item.id.asc()).all()
         if request:
-            db.session.delete(request)
+            for i in request:
+
+                db.session.delete(i.id)
             db.session.commit()
         return request
+
+class ItemSchema(mm.SQLAlchemyAutoSchema):
+    class Meta:
+        model = item
+        model01 = BuyRequest
+        model02 = User
+        load_instance = True

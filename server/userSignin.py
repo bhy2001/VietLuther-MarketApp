@@ -4,13 +4,13 @@ from server.utils import check_pw
 
 user_sign_in = Blueprint("user_sign_in", __name__)
 
-@user_sign_in.route("/signin", methods=["GET"])
-def user_signin():
-    # If a session exists, redirect to message page
-    if "user" in session:
-        return redirect(url_for("send_messages.messages"))
-    else:
-        return render_template("user_signin.html")
+# @user_sign_in.route("/signin", methods=["GET"])
+# def user_signin():
+#     # If a session exists, redirect to message page
+#     if "user" in session:
+#         return redirect(url_for("send_messages.messages"))
+#     else:
+#         return render_template("user_signin.html")
 
 @user_sign_in.route("/api/signin", methods=["POST"])
 def api_user_signin():
@@ -49,8 +49,8 @@ def api_user_signin():
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
 
-@user_sign_in.route('/api/logout', methods=["POST"])
-def api_user_logout():
-    session.clear()
+# @user_sign_in.route('/api/logout', methods=["POST"])
+# def api_user_logout():
+#     session.clear()
 
-    return redirect(url_for("user_sign_in.user_signin"))
+#     return redirect(url_for("user_sign_in.user_signin"))
