@@ -5,6 +5,6 @@
 
 const SERVER_URL = "";
 
-async function name(params) {
-  
+async function SignUp() {
+  var username = 
 }
