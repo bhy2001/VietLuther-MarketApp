@@ -25,41 +25,46 @@
     <h2>SIGN IN or SIGN UP</h2>
     <div id="forms">
       <div id="signup">
-        <form action="/signup" method="POST" class="form">
+        <div class="">
           <div class="">
-            <label class="">username</label>
-            <input type="text" name="signup-name" required />
+            <label class="">Username</label>
+            <input type="text" name="username" id="username" required />
+          </div>
+          <div class="">
+            <label class="">Student id</label>
+            <input type="text" name="student_id" id="student-id" required />
           </div>
           <div class="">
             <label class="">password</label>
-            <input type="password" name="signup-pw" required />
+            <input type="password" name="password" id="password" required />
           </div>
           <div class="">
-            <label class="">password</label>
-            <input type="password" name="signup-pw-cf" required />
+            <label class="">Confirm password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              id="password-cf"
+              required
+            />
           </div>
           <div class="">
-            <label class="">email</label>
-            <input type="text" name="signup-pw" required />
+            <label class="">Email</label>
+            <input type="text" name="email" id="email" required />
           </div>
           <div class="">
-            <label class="">phone number</label>
-            <input type="text" name="signup-pw" required />
-          </div>
-          <div class="">
-            <label class="">location</label>
-            <input type="text" name="signup-pw" required />
+            <label class="">Phone number</label>
+            <input type="text" name="phone_number" id="phone-number" required />
           </div>
           <div class="">
             <input
               type="submit"
-              class="mui-btn mui-btn--primary"
-              onclick="SignIn()"
+              class=""
+              onclick="SignUp()"
               value="Sign Up"
               disable
             />
           </div>
-        </form>
+        </div>
       </div>
     </div>
     <script type="text/javascript" defer="defer" src="js/control.js"></script>
