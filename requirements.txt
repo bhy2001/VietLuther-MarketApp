@@ -10,3 +10,4 @@ flask-socketio
 eventlet
 pillow
 flask_cors
+flask_marshmallow
