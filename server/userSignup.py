@@ -13,9 +13,12 @@ def api_user_signup():
     try:
         params = request.form
         username = params.get("username", "")
+        student_id = params.get("student_id", "")
+        email = params.get("email", "")
+        phone_number = params.get("phone_number", "")
         password = params.get("password", "")
         confirmPassword = params.get("confirmPassword", "")
-        email = params.get("email", "")
+
 
         # Verify password
         if password != confirmPassword:
@@ -31,7 +34,7 @@ def api_user_signup():
         else:
             # Hash the password
             password_hash = hash_pw(password)
-            new_user = User(username=username, email=email, password_hash=password_hash)
+            new_user = User(username=username,student_id = student_id, email=email,phone_number =phone_number, password_hash=password_hash)
 
             # Add user to the database
             User.insert(new_user)

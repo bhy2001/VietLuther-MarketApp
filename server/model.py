@@ -118,7 +118,7 @@ class User(db.Model):
         dic = {}
         request_users_id = []
 
-        # filter conversation request between user_id with another, choose the
+        # filter request between user_id with another, choose the
         # request that has latest request_time
         for i in all_request_users:
             is_receiver = i[0] == i[4]
@@ -134,6 +134,7 @@ class User(db.Model):
                         "request_id": i[2],
                         "request_status": i[5],
                         "request_time": i[6],
+                        "price": i[7],
                         "is_sender": not is_receiver,
                         "is_receiver": is_receiver
                         }
@@ -145,6 +146,7 @@ class User(db.Model):
                             "request_id": i[2],
                             "request_status": i[5],
                             "request_time": i[6],
+                            "price": i[7],
                             "is_sender": not is_receiver,
                             "is_receiver": is_receiver
                             }
@@ -166,6 +168,7 @@ class User(db.Model):
                 "request_id": None,
                 "request_status": None,
                 "request_time": None,
+                "price":None,
                 "is_sender": None,
                 "is_receiver": None
                 })
