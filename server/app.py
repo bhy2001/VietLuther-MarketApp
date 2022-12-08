@@ -48,6 +48,11 @@ def api_user_signin():
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
+#logout
+@app.route('/api/logout', methods=["POST"])
+def api_user_logout():
+    session.clear()
+
 #sign up
 @app.route("/api/signup", methods=["POST"])
 @cross_origin()
@@ -106,7 +111,7 @@ def get_all_available_request():
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
-@app.route("api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
+@app.route("/api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
 @cross_origin()
 def add_new_request(initiator_id,request_time,price):
     try:
@@ -128,7 +133,7 @@ def add_new_request(initiator_id,request_time,price):
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
-@app.route("api/request/remove/<int:request_id>", methods = ["POST"])
+@app.route("/api/request/remove/<int:request_id>", methods = ["POST"])
 @cross_origin()
 def remove_request(request_id:int):
     try:
@@ -143,7 +148,7 @@ def remove_request(request_id:int):
     except Exception as error:
         return {"Error": "Bad Request." + str(error)}, 400
 
-@app.route("api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["POST"])
+@app.route("/api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["POST"])
 @cross_origin()
 def accpet_request(request_id:int,accepter_id:int,accepted_time:int):
     try:
@@ -155,3 +160,4 @@ def accpet_request(request_id:int,accepter_id:int,accepted_time:int):
 
     except Exception as error:
         return {"Error": "Bad Request." + str(error)}, 400
+    
