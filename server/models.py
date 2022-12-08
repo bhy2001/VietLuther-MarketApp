@@ -301,23 +301,23 @@ class BuyRequest(db.Model):
 
 ### ******************************************************** ###
 
-        all_requests = BuyRequest.query.filter(
-                BuyRequest.request_status == "available",
-                ).order_by(BuyRequest.id.asc()).all()
+        # all_requests = BuyRequest.query.filter(
+        #         BuyRequest.request_status == "available",
+        #         ).order_by(BuyRequest.id.asc()).all()
 
-        all_requests_list = []
+        # all_requests_list = []
 
-        for request in all_requests:
-            all_requests_list.append({
-                    "id": request.id,
-                    "initiator_id": request.initiator_id,
-                    "receiver_id": request.receiver_id,
-                    "request_status": request.request_status,
-                    "request_time": request.request_time,
-                    "accepted_time": request.accepted_time,
-                    "price": request.price
-                })
-        return all_requests_list
+        # for request in all_requests:
+        #     all_requests_list.append({
+        #             "id": request.id,
+        #             "initiator_id": request.initiator_id,
+        #             "receiver_id": request.receiver_id,
+        #             "request_status": request.request_status,
+        #             "request_time": request.request_time,
+        #             "accepted_time": request.accepted_time,
+        #             "price": request.price
+        #         })
+        # return all_requests_list
 
     @classmethod
     def get_all_request_by_sender(cls, initiator_id: int, request_status: str) -> list:

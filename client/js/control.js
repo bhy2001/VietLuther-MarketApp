@@ -3,7 +3,7 @@
 /* jshint browser: true */
 "use strict";
 
-const SERVER_URL = "";
+const SERVER_URL = "http://kevin00co.pythonanywhere.com/";
 
 async function SignUp() {
   let username = document.getElementById("username").value;
