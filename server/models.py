@@ -78,14 +78,13 @@ class User(db.Model):
         id = User.query.order_by(User.id.desc()).first().id
         return id
 
-### cần sửa cái này ####
     @classmethod
-    def find_people(cls, user_id: int) -> List:
+    def find_request_by_user_id(cls, user_id: int) -> List:
         # query all requests that send to user_id
         sub_query = db.session.query(
                 BuyRequest,
                 label("latest_request", func.max(BuyRequest.request_time))
-                ).filter(BuyRequest.receiver_id == user_id).group_by(BuyRequest.initiator_id).subquery()
+                ).filter(BuyRequest.receiver_id == user_id).group_by(BuyRequest.id).subquery()
 
         #query all users that send request to user_id
         sender_query = db.session.query(
@@ -239,6 +238,69 @@ class BuyRequest(db.Model):
     @classmethod
     def get_all_requests(cls, request_status: str) -> List:
         """Return latest pending request between sender"""
+### ******************************************************** ###
+    @classmethod
+    def all_request(cls) -> List:
+        # query all requests that send to user_id
+        sub_query = db.session.query(
+                BuyRequest,
+                label("latest_request", func.max(BuyRequest.request_time))
+                ).filter(BuyRequest.request_status == "available").group_by(BuyRequest.id).subquery()
+
+        #query all users that send request to user_id
+        sender_query = db.session.query(
+                User.id,
+                User.username,
+                sub_query.c.id,
+                sub_query.c.initiator_id,
+                sub_query.c.receiver_id,
+                sub_query.c.request_status,
+                sub_query.c.request_time,
+                sub_query.c.price
+                ).join(sub_query, User.id == sub_query.c.initiator_id).order_by(asc(User.id)).all()
+
+        # query all request that user_id send
+        dic = {}
+        request_users_id = []
+
+        # filter request between user_id with another, choose the
+        # request that has latest request_time
+        for i in sender_query:
+            is_receiver = i[0] == i[4]
+            key = tuple(sorted([i[3], i[4]]))
+
+            if i[0] not in request_users_id:
+                request_users_id.append(i[0])
+
+            if key not in dic:
+                dic[key] = {
+                        "user_id": i[0],
+                        "username": i[1],
+                        "request_id": i[2],
+                        "request_status": i[5],
+                        "request_time": i[6],
+                        "price": i[7],
+                        "is_sender": not is_receiver,
+                        "is_receiver": is_receiver
+                        }
+            else:
+                if dic[key]["request_time"] < i[6]:
+                    dic[key] = {
+                            "user_id": i[0],
+                            "username": i[1],
+                            "request_id": i[2],
+                            "request_status": i[5],
+                            "request_time": i[6],
+                            "price": i[7],
+                            "is_sender": not is_receiver,
+                            "is_receiver": is_receiver
+                            }
+
+        result = list(dic.values())
+        return result
+
+### ******************************************************** ###
+
         all_requests = BuyRequest.query.filter(
                 BuyRequest.request_status == "available",
                 ).order_by(BuyRequest.id.asc()).all()
