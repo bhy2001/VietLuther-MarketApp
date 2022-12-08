@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app=app)
 
 ## sign in 
-@app.route("/api/signin", methods=["POST"])
+@app.route("/api/signin", methods=["GET","POST"])
 @cross_origin()
 def api_user_signin():
     try:
@@ -48,8 +48,13 @@ def api_user_signin():
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
+#logout
+@app.route('/api/logout', methods=["GET","POST"])
+def api_user_logout():
+    session.clear()
+
 #sign up
-@app.route("/api/signup", methods=["POST"])
+@app.route("/api/signup", methods=["GET","POST"])
 @cross_origin()
 def api_user_signup():
     try:
@@ -94,11 +99,23 @@ def api_user_signup():
         return {"Error": "Bad request. " + str(error)}, 400
 
 # request controler
+# @app.route("/api/request/all", methods=["GET","POST"])
+# @cross_origin()
+# def get_all_available_request():
+#     try:
+#         all_request_data = BuyRequest.get_all_requests(request_status="available")
+#         if not all_request_data:
+#             raise Exception("No request found")
+#         return jsonify(all_request_data), 200
+
+#     except Exception as error:
+#         return jsonify({"error": "Bad request. " + str(error)}), 404
+# show your accepted request
 @app.route("/api/request/all", methods=["GET","POST"])
 @cross_origin()
 def get_all_available_request():
     try:
-        all_request_data = BuyRequest.get_all_requests(request_status="available")
+        all_request_data = BuyRequest.all_request()
         if not all_request_data:
             raise Exception("No request found")
         return jsonify(all_request_data), 200
@@ -106,6 +123,7 @@ def get_all_available_request():
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
+# add new Request
 @app.route("/api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
 @cross_origin()
 def add_new_request(initiator_id,request_time,price):
@@ -124,11 +142,16 @@ def add_new_request(initiator_id,request_time,price):
         for i in items:
             new_item = item(request_id=request_id,item_name= i, item_quanity = items.i)
             item.insert(new_item==new_item)
-        return "Success",200
+        payload = {
+                "status": "Successful",
+                "sessionCookie": "",
+                "curentRequestId": new_request.id
+            }
+        return jsonify(payload), 200
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
-@app.route("api/request/remove/<int:request_id>", methods = ["POST"])
+@app.route("/api/request/remove/<int:request_id>", methods = ["GET","POST"])
 @cross_origin()
 def remove_request(request_id:int):
     try:
@@ -143,7 +166,7 @@ def remove_request(request_id:int):
     except Exception as error:
         return {"Error": "Bad Request." + str(error)}, 400
 
-@app.route("api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["POST"])
+@app.route("/api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["GET","POST"])
 @cross_origin()
 def accept_request(request_id:int,accepter_id:int,accepted_time:int):
     try:
@@ -155,3 +178,4 @@ def accept_request(request_id:int,accepter_id:int,accepted_time:int):
 
     except Exception as error:
         return {"Error": "Bad Request." + str(error)}, 400
+    
