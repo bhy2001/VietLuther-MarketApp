@@ -116,19 +116,35 @@ async function CreateRequest() {
 
 async function SeeAllRequests() {
   let request = await fetch(
-    SERVER_URL + `/api/request/all`
+    // SERVER_URL + `/api/request/all`
+    "json-test/all_request_sample.JSON"
   )
     .then((response) => response.json())
     .then((response) => {
-      let table = document.querySelector("#table > thead");
-      
+      console.log(response);
+      let tablebody = document.querySelector("#table > tbody");
+      tablebody.innerHTML = "";
+      console.log(tablebody.innerHTML);
+      if (response.fectch_reqstatus == "Successful") {
+        for (const data of response.data) {
+          let row = document.createElement("tr");
+          let user = document.createElement("td");
+          user.innerText = data.user_id;
+          row.appendChild(user);
+          let reqstat = document.createElement("td");
+          reqstat.innerText = data.request_status;
+          row.appendChild(reqstat);
+          let price = document.createElement("td");
+          price.innerText = data.price;
+          row.appendChild(price);
+          tablebody.appendChild(row);
+        }
+      }
     });
 }
 
 async function RemoveRequest(request_id) {
-  let request = await fetch(
-    SERVER_URL + `/api/request/remove/${request_id}`
-  )
+  let request = await fetch(SERVER_URL + `/api/request/remove/${request_id}`)
     .then((response) => response.json())
     .then((response) => {});
 }
@@ -150,8 +166,6 @@ async function AcceptRequest(request_id) {
     .then((response) => response.json())
     .then((response) => {});
 }
-
-
 
 function AddItem() {
   let item = document.getElementById("item").value;

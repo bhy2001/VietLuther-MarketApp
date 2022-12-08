@@ -28,34 +28,52 @@
     </div>
     <div id="forms">
       <div class="form-group flex justify-content-center container">
-          <div class="row">
-            <div class="col-md-8 mx-auto">
-              <label class="">Item</label>
-              <input id="item" class="form-control" type="text" name="item" required/>
-            </div>
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <label class="">Item</label>
+            <input
+              id="item"
+              class="form-control"
+              type="text"
+              name="item"
+              required
+            />
           </div>
-          <div class="row">
-            <div class="col-md-8 mx-auto">
-              <label class="">Quantity</label>
-              <input id="quantity" class="form-control" type="number" name="item_quantity" required/>
-            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <label class="">Quantity</label>
+            <input
+              id="quantity"
+              class="form-control"
+              type="number"
+              name="item_quantity"
+              required
+            />
           </div>
-          <div class="row">
-            <div class="col-md-8 mx-auto">
-              <label class="">Price</label>
-              <input id="price" class="form-control" type="number" name="item_quantity" required/>
-            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <label class="">Price</label>
+            <input
+              id="price"
+              class="form-control"
+              type="number"
+              name="item_quantity"
+              required
+            />
           </div>
-          <div class="row">
-            <div class="col-1 mx-auto mt-3">
-              <input
+        </div>
+        <div class="row">
+          <div class="col-1 mx-auto mt-3">
+            <input
               type="submit"
               class="btn btn-info"
               onclick="AddItem()"
               value="Add Item"
               disable
             />
-            </div>
+          </div>
           <div class="col-1 mx-auto mt-3">
             <ul id="item_list">
               Item list (if any)
@@ -63,30 +81,37 @@
           </div>
           <div class="col-1 mx-auto mt-3 flex justify-content-center">
             <div>Total Price</div>
-            <div id="total-price">
-              0
-            </div>
+            <div id="total-price">0</div>
           </div>
-          </div> 
-          <div class="row">
-            <div class="col-1 mx-auto mt-3">
-              <input
+        </div>
+        <div class="row">
+          <div class="col-1 mx-auto mt-3">
+            <input
               type="submit"
               class="btn btn-info"
               onclick="CreateRequest()"
               value="Submit Request"
               disable
             />
-            </div>
-            <div class="col-1 mx-auto mt-3">
-              <button class="btn btn-info" onclick="SeeAllRequests()">See All Requests</button>
-            </div>
           </div>
+          <div class="col-1 mx-auto mt-3">
+            <button class="btn btn-info" onclick="SeeAllRequests()">
+              See All Requests
+            </button>
+          </div>
+        </div>
       </div>
-  </div>
-    <div id="table_container">
-      <table>
-        
+    </div>
+    <div id="container">
+      <table class="table" id="table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Request Status</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
       </table>
     </div>
     <script type="text/javascript" defer="defer" src="js/control.js"></script>
