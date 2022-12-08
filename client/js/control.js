@@ -114,6 +114,16 @@ async function CreateRequest() {
     .then((response) => {});
 }
 
+async function SeeAllRequests() {
+  let request = await fetch(
+    SERVER_URL + `/api/request/all`
+  )
+    .then((response) => response.json())
+    .then((response) => {});
+}
+
+
+
 function AddItem() {
   let item = document.getElementById("item").value;
   if (item == "") return;
