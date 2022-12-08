@@ -106,7 +106,7 @@ def get_all_available_request():
     except Exception as error:
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
-@app.route("api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
+@app.route("/api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
 @cross_origin()
 def add_new_request(initiator_id,request_time,price):
     try:
@@ -145,7 +145,7 @@ def remove_request(request_id:int):
 
 @app.route("api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["POST"])
 @cross_origin()
-def accpet_request(request_id:int,accepter_id:int,accepted_time:int):
+def accept_request(request_id:int,accepter_id:int,accepted_time:int):
     try:
         request_data = BuyRequest.get_request_by_request_id(request_id=request_id)
         if not request_data:

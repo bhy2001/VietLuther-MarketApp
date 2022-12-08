@@ -19,26 +19,41 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <div id="title">
+    <div class="d-flex justify-content-center" id="title">
         <h1>WELCOME TO VIET LUTHER MARKET</h1>
     </div>
-    <h2>SIGN IN  or SIGN UP</h2>
+    <h2 class="d-flex justify-content-center">SIGN IN</h2>
     <div id="forms">
-        <div id="signin">
-            <div class="">
-                <div class="">
-                  <label class="">username</label>
-                  <input type="text" name="signin-name" required/>
-                </div>
-                <div class="">
-                  <label class="">password</label>
-                  <input type="text" name="signin-pw" required/>
-                </div>
-                <div class="">
-                  <input type="submit" class="mui-btn mui-btn--primary" onclick="SignIn()" value="Sign In" disable/>
-                </div>
+        <form class="form-group flex justify-content-center container">
+            <div class="row">
+              <div class="col-md-8 mx-auto">
+                <label class="">username</label>
+                <input id="username" class="form-control" type="text" name="signin-name" required/>
+              </div>
             </div>
-          </div>
+            <div class="row">
+              <div class="col-md-8 mx-auto">
+                <label class="">password</label>
+                <input id="password" class="form-control" type="password" name="signin-pw" required/>
+              </div>
+            </div> 
+            <div class="row">
+              <div class="col-1 mx-auto mt-3">
+                <input
+                type="submit"
+                class="btn btn-info"
+                onclick="SignIn()"
+                value="Sign In"
+                disable
+              />
+              </div>
+              <div class="col-1 mx-auto mt-3">
+                <a class="btn btn-info" href="base.html">Back to home</a>
+              </div>
+            </div>
+        </form>
+    </div>
+    <div class="" id="message">
     </div>
     <script type="text/javascript" defer="defer" src="js/control.js"></script>
   </body>

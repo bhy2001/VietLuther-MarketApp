@@ -19,54 +19,101 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <div id="title">
+    <div class="d-flex justify-content-center" id="title">
       <h1>WELCOME TO VIET LUTHER MARKET</h1>
     </div>
-    <h2>SIGN IN or SIGN UP</h2>
+    <h2 class="d-flex justify-content-center">SIGN UP</h2>
     <div id="forms">
-      <div id="signup">
-        <div class="">
-          <div class="">
-            <label class="">Username</label>
-            <input type="text" name="username" id="username" required />
+        <form class="form-group flex justify-content-center container">
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <label class="">Username</label>
+              <input
+                class="form-control"
+                type="text"
+                name="username"
+                id="username"
+                required
+              />
+            </div>
           </div>
-          <div class="">
-            <label class="">Student id</label>
-            <input type="text" name="student_id" id="student-id" required />
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <label class="">Student id</label>
+              <input
+                type="text"
+                class="form-control"
+                name="student_id"
+                id="student-id"
+                required
+              />
+            </div>
           </div>
-          <div class="">
-            <label class="">password</label>
-            <input type="password" name="password" id="password" required />
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <label class="">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                name="password"
+                id="password"
+                required
+              />
+            </div>
           </div>
-          <div class="">
-            <label class="">Confirm password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              id="password-cf"
-              required
-            />
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <label class=".mx-auto">Confirm password</label>
+              <input
+                class="form-control"
+                type="password"
+                name="confirmPassword"
+                id="password-cf"
+                required
+              />
+            </div>
           </div>
-          <div class="">
-            <label class="">Email</label>
-            <input type="text" name="email" id="email" required />
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <label class="">Email</label>
+              <input
+                type="text"
+                class="form-control"
+                name="email"
+                id="email"
+                required
+              />
+            </div>
           </div>
-          <div class="">
-            <label class="">Phone number</label>
-            <input type="text" name="phone_number" id="phone-number" required />
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <label class="">Phone number</label>
+              <input
+                type="text"
+                class="form-control"
+                name="phone_number"
+                id="phone-number"
+                required
+              />
+            </div>
           </div>
-          <div class="">
-            <input
+          <div class="row">
+            <div class="col-1 mx-auto mt-3">
+              <input
               type="submit"
-              class=""
+              class="btn btn-info"
               onclick="SignUp()"
               value="Sign Up"
               disable
             />
+            </div>
+            <div class="col-1 mx-auto mt-3">
+              <a class="btn btn-info" href="base.html">Back to home</a>
+            </div>
           </div>
-        </div>
-      </div>
+        </form>
     </div>
+    <div class="" id="message"></div>
     <script type="text/javascript" defer="defer" src="js/control.js"></script>
   </body>
 </html>
