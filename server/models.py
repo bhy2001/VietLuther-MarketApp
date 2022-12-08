@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 import json
 import time
 from typing import Union, List
-from sqlalchemy import func, desc, asc, not_, and_, true
+from sqlalchemy import func, desc, asc, not_, and_, true,update
 from sqlalchemy.sql import label
 from config import db, mm
 
@@ -220,6 +221,20 @@ class BuyRequest(db.Model):
     def process(self) -> None:
         self.request_status = "process"
         db.session.commit()
+    
+    def set_reciever(self, other):
+        self.receiver_id =other
+        db.session.commit()
+    
+    @classmethod
+    def accept_request(cls, request_id:int, receiver_id:int, time:int):
+        table = 'buy_request'
+        stmt = (
+            update(table).
+            where(table.c.id == request_id).
+            values(receiver_id=receiver_id,accepted_time =time )
+        )
+        db.session.commit()
 
     @classmethod
     def get_all_requests(cls, request_status: str) -> List:
@@ -337,7 +352,7 @@ class BuyRequest(db.Model):
         return request
 
 
-class item (db.model):
+class item (db.Model):
     __tablename__ = 'item'
     id = db.Column(db.Integer, primary_key=True)
     request_id = db.Column(db.Integer, db.ForeignKey("buyrequest.id"), nullable=False)
@@ -391,9 +406,17 @@ class item (db.model):
             db.session.commit()
         return request
 
-class ItemSchema(mm.SQLAlchemyAutoSchema):
+class Userschema(mm.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = True
+
+class BuyRequestschema(mm.SQLAlchemyAutoSchema):
+    class Meta:
+        model = BuyRequest
+        load_instance = True
+
+class itemschema(mm.SQLAlchemyAutoSchema):
     class Meta:
         model = item
-        model01 = BuyRequest
-        model02 = User
         load_instance = True

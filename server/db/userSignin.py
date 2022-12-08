@@ -2,9 +2,9 @@ from flask import Blueprint, jsonify, request, session, redirect, url_for, rende
 from server.model import User
 from server.utils import check_pw
 
-user_sign_in = Blueprint("user_sign_in", __name__)
+app = Blueprint("app", __name__)
 
-# @user_sign_in.route("/signin", methods=["GET"])
+# @app.route("/signin", methods=["GET"])
 # def user_signin():
 #     # If a session exists, redirect to message page
 #     if "user" in session:
@@ -12,7 +12,7 @@ user_sign_in = Blueprint("user_sign_in", __name__)
 #     else:
 #         return render_template("user_signin.html")
 
-@user_sign_in.route("/api/signin", methods=["POST"])
+@app.route("/api/signin", methods=["POST"])
 def api_user_signin():
     try:
         params = request.get_json(force=True)
@@ -49,8 +49,8 @@ def api_user_signin():
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
 
-# @user_sign_in.route('/api/logout', methods=["POST"])
+# @app.route('/api/logout', methods=["POST"])
 # def api_user_logout():
 #     session.clear()
 
-#     return redirect(url_for("user_sign_in.user_signin"))
+#     return redirect(url_for("app.user_signin"))

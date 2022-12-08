@@ -1,5 +1,5 @@
 """App config file"""
-
+#!/usr/bin/env python3
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy

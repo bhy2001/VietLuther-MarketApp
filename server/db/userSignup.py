@@ -2,13 +2,13 @@ from flask import Blueprint, jsonify, request, session, redirect, url_for, rende
 from server.utils import hash_pw
 from server.model import User
 
-user_sign_up = Blueprint("user_sign_up", __name__)
+app = Blueprint("app", __name__)
 
-# @user_sign_up.route("/signup", methods=["GET"])
+# @app.route("/signup", methods=["GET"])
 # def user_signup():
 #     return render_template("user_signup.html")
 
-@user_sign_up.route("/api/request", methods=["POST"])
+@app.route("/api/request", methods=["POST"])
 def api_user_signup():
     try:
         params = request.form
