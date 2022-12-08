@@ -119,6 +119,35 @@ async function SeeAllRequests() {
     SERVER_URL + `/api/request/all`
   )
     .then((response) => response.json())
+    .then((response) => {
+      let table = document.querySelector("#table > thead");
+      
+    });
+}
+
+async function RemoveRequest(request_id) {
+  let request = await fetch(
+    SERVER_URL + `/api/request/remove/${request_id}`
+  )
+    .then((response) => response.json())
+    .then((response) => {});
+}
+
+async function AcceptRequest(request_id) {
+  let year = d.getFullYear();
+  let date = d.getDate();
+  let month = d.getMonth();
+  let time = "";
+  if (date < 10) {
+    time = time + month + "0" + date + year;
+  } else {
+    time = time + month + date + year;
+  }
+  let userid = parseInt(document.getElementById("username"));
+  let request = await fetch(
+    SERVER_URL + `/api/request/accept/${request_id}/${userid}/${time}`
+  )
+    .then((response) => response.json())
     .then((response) => {});
 }
 
