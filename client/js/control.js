@@ -69,7 +69,7 @@ async function SignIn() {
   //   `SERVER_URL + `/api/signin?username=${username}&password=${password}`
   // );
   let request = await fetch(
-    SERVER_URL + `/api/signin?username=${username}&password=${password}`
+    SERVER_URL + `/api/signin/${username}/${password}`
   )
     .then((response) => response.json())
     .then((response) => {
