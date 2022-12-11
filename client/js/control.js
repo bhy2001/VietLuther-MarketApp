@@ -61,10 +61,11 @@ async function SignIn() {
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
-          window.location.href = "base.html";
+          
           let IdContainer = document.getElementById("username");
           IdContainer.innerText = userName.toString();
           IdContainer.innerText = userName.toString();
+          window.location.href = "./base.html";
         }
       }
     });
@@ -192,4 +193,7 @@ function AddItem() {
   let totalprice = parseInt(document.getElementById("total-price").innerText);
   totalprice = totalprice + price;
   document.getElementById("total-price").innerText = `${totalprice}`;
+}
+window.onload = function (){
+  
 }

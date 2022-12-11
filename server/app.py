@@ -4,9 +4,11 @@ from flask import Flask, render_template, session, redirect, url_for, request, j
 from config import app, db
 from models import User,item, BuyRequest, ItemSchema, BuyRequestschema
 from utils import hash_pw, check_pw
+from flask_cors import CORS, cross_origin
 
 ## sign in 
 @app.route("/api/signin/<string:username>/<string:password>", methods=["GET","POST"])
+@cross_origin()
 def api_user_signin(username:str, password:str):
     if not username and not password:
         err = "Invalid login credentials. Please try again."
@@ -32,6 +34,7 @@ def api_user_signin(username:str, password:str):
 
 #logout
 @app.route('/api/logout', methods=["GET","POST"])
+@cross_origin()
 def api_user_logout():
     return "Successfull log out"
 
@@ -39,6 +42,7 @@ def api_user_logout():
 @app.route(
     "/api/signup/<string:username>/<int:student_id>/<string:email>/<int:phone_number>/<string:password>/<string:confirmPassword>",
     methods=["GET","POST"])
+@cross_origin()
 def api_user_signup(
     username: str,student_id: int, email: str,
     phone_number: int, password: str, confirmPassword:str
@@ -86,6 +90,7 @@ def api_user_signup(
 #         return jsonify({"error": "Bad request. " + str(error)}), 404
 # show your accepted request
 @app.route("/api/request/all", methods=["GET","POST"])
+@cross_origin()
 def get_all_available_request():
     request = BuyRequest.query.filter(BuyRequest.request_status == "available")    
     
@@ -107,17 +112,22 @@ def get_all_available_request():
 
 # add new Request
 @app.route("/api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
+@cross_origin()
 def add_new_request(initiator_id,request_time,price):
     try:
         new_request = BuyRequest(
             initiator_id = initiator_id, 
             request_time= request_time, 
             price= price)
-        
+        if request.method == "POST":
+            items = request.get_json(force =True)
+        print (initiator_id, request_time, price)
+        print(items)
         BuyRequest.insert(new_request=new_request)
 
         request_id = new_request.id
-        items = request.get_json(force =True)
+        # items = request.get_json(force =True)
+        # print(items)
         if not items:
             raise Exception ("bad Json")
         for i in items:
@@ -133,28 +143,26 @@ def add_new_request(initiator_id,request_time,price):
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
 @app.route("/api/request/remove/<int:request_id>", methods = ["GET","POST"])
-
+@cross_origin()
 def remove_request(request_id:int):
     try:
-        request_data = BuyRequest.get_request_by_request_id(request_id=request_id)
-        if not request_data:
-            raise Exception("No request found")
-
-        BuyRequest.delete(request_data=request_data.id)
-        item.delete_request_id(request_id=request_data.id)
+        BuyRequest.delete_by_condition(request_id=request_id)
+        item.delete_request_id(request_id=request_id)
+        # BuyRequest.query.filter(BuyRequest.id == request_id).delete(synchronize_session=False)
+        # item.query.filter(item.request_id == request_id).delete(synchronize_session=False)
         return "Success", 200
+    except:
+        return "not found request"
 
-    except Exception as error:
-        return {"Error": "Bad Request." + str(error)}, 400
 
 @app.route("/api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["GET","POST"])
+@cross_origin()
 def accept_request(request_id:int,accepter_id:int,accepted_time:int):
-    try:
+    try:    
         request_data = BuyRequest.get_request_by_request_id(request_id=request_id)
         if not request_data:
-            raise Exception("No request found")
+            return jsonify({"Error":"No request found"})
         BuyRequest.accept_request(request_id=request_id,receiver_id=accepter_id,time=accepted_time)
         return "Success", 200
-
-    except Exception as error:
-        return {"Error": "Bad Request." + str(error)}, 400
+    except:
+        return "Error"
