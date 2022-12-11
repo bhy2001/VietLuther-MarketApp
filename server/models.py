@@ -225,12 +225,7 @@ class BuyRequest(db.Model):
     
     @classmethod
     def accept_request(cls, request_id:int, receiver_id:int, time:int):
-        table = 'buy_request'
-        stmt = (
-            update(table).
-            where(table.c.id == request_id).
-            values(receiver_id=receiver_id,accepted_time =time )
-        )
+        update(BuyRequest).where(BuyRequest.id == request_id).values(receiver_id=receiver_id,request_status = "accepted",accepted_time =time )
         db.session.commit()
 
     @classmethod
@@ -333,16 +328,10 @@ class BuyRequest(db.Model):
     def insert(cls, new_request: BuyRequest) -> None:
         db.session.add(new_request)
         db.session.commit()
-
+############################################################################
     @classmethod
-    def delete(cls, request_id: int) -> Union[BuyRequest, None]:
-        # Delete and return an user from the database. Return None if the user doesn't exist
-        request = BuyRequest.get_request_by_id(request_id)
-        if request:
-            db.session.delete(request)
-            db.session.commit()
-        return request
-
+    def delete_by_condition(cls, request_id: int) -> None:
+        delete(BuyRequest).where(BuyRequest.id == request_id)
 
 class item (db.Model):
     __tablename__ = 'item'
@@ -386,17 +375,9 @@ class item (db.Model):
         db.session.commit()
 
     @classmethod
-    def delete_request_id(cls, request_id: int) -> Union[item, None]:
+    def delete_request_id(cls, request_id: int):
         # Delete and return an user from the database. Return None if the user doesn't exist
-        request = item.query.filter(
-                item.request_id == request_id,
-                ).order_by(item.id.asc()).all()
-        if request:
-            for i in request:
-
-                db.session.delete(i.id)
-            db.session.commit()
-        return request
+        delete(item).where(item.request_id == request_id)
 
 class Userschema(mm.SQLAlchemyAutoSchema):
     class Meta:

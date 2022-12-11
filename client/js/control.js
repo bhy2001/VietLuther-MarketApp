@@ -55,20 +55,19 @@ async function SignIn() {
   let request = await fetch(SERVER_URL + `/api/signin/${username}/${password}`)
     .then((response) => response.json())
     .then((response) => {
-      // if (response.hasOwnProperty("error")) {
-      //   warn_msg.innerText = response["error"].toString();
-      //   warn_msg.setAttribute("class", "alert alert-danger");
-      // } else {
-      //   if (response.status == "Successful") {
-      //     console.log(response.status);
-      //     let userName = response["currentUserName"];
-      //     window.location.href = "base.html";
-      //     let IdContainer = document.getElementById("username");
-      //     IdContainer.innerText = userName.toString();
-      //     IdContainer.innerText = userName.toString();
-      //   }
-      // }
-      console.log(response);
+      if (response.hasOwnProperty("error")) {
+        warn_msg.innerText = response["error"].toString();
+        warn_msg.setAttribute("class", "alert alert-danger");
+      } else {
+        if (response["status"] == "Successful") {
+          let userName = response["currentUserName"];
+          
+          let IdContainer = document.getElementById("username");
+          IdContainer.innerText = userName.toString();
+          IdContainer.innerText = userName.toString();
+          window.location.href = "./base.html";
+        }
+      }
     });
 }
 
@@ -194,4 +193,7 @@ function AddItem() {
   let totalprice = parseInt(document.getElementById("total-price").innerText);
   totalprice = totalprice + price;
   document.getElementById("total-price").innerText = `${totalprice}`;
+}
+window.onload = function (){
+  
 }
