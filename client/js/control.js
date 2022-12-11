@@ -37,7 +37,7 @@ async function SignUp() {
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
-          window.location.href = "index.html";
+          window.location.href = "base.html";
           let IdContainer = document.getElementById("username");
           IdContainer.innerText = userName.toString();
           IdContainer.innerText = userName.toString();
@@ -61,7 +61,7 @@ async function SignIn() {
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
-          window.location.href = "index.html";
+          window.location.href = "base.html";
           let IdContainer = document.getElementById("username");
           IdContainer.innerText = userName.toString();
           IdContainer.innerText = userName.toString();
@@ -72,41 +72,42 @@ async function SignIn() {
 
 async function CreateRequest() {
   let items = document.getElementById("item_list");
-  let jsonlist = {};
-  if (items.children.length == 0) return;
-  for (const child of items.children) {
-  if (items.children.length == 0) return;
-  for (const child of items.children) {
-    let child_string = child.innerText;
-    const child_array = child_string.split(",");
-    jsonlist[`"${child_array[0]}"`] = child_array[1];
-  }
-  const BodyObj = JSON.stringify(jsonlist);
   const SendObj = {
     method: "POST",
-    body: BodyObj,
   };
-  let tprice = parseInt(document.getElementById("total-price").innerText);
-  console.log(tprice);
-  let userid = document.getElementById("username").innerText;
-  console.log(userid);
-  const d = new Date();
-  let year = d.getFullYear();
-  let date = d.getDate();
-  let month = d.getMonth();
-  let time = "";
-  if (date < 10) {
-    time = time + month + "0" + date + year;
-  } else {
-    time = time + month + date + year;
-  }
-  console.log(`/api/request/add/${userid}/${time}/${tprice}`);
-  let request = await fetch(
-    SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`,
-    SendObj
-  )
-    .then((response) => response.json())
-    .then((response) => {});
+  SendObj["body"] = {};
+  if (items.children.length == 0) return;
+  for (const child of items.children) {
+    if (items.children.length == 0) return;
+    for (const child of items.children) {
+      let child_string = child.innerText;
+      child_string = child_string.toString();
+      const child_array = child_string.split(",");
+      console.log(child_array);
+      SendObj["body"][child_array[0]] = child_array[1];
+    }
+    console.log(SendObj);
+    let tprice = parseInt(document.getElementById("total-price").innerText);
+    console.log(tprice);
+    let userid = document.getElementById("username").innerText;
+    console.log(userid);
+    const d = new Date();
+    let year = d.getFullYear();
+    let date = d.getDate();
+    let month = d.getMonth();
+    let time = "";
+    if (date < 10) {
+      time = time + month + "0" + date + year;
+    } else {
+      time = time + month + date + year;
+    }
+    console.log(`/api/request/add/${userid}/${time}/${tprice}`);
+    let request = await fetch(
+      SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`,
+      SendObj
+    )
+      .then((response) => response.json())
+      .then((response) => {});
   }
 }
 
@@ -155,9 +156,7 @@ async function RemoveRequest(request_id) {
     JsonObj
   )
     .then((response) => response.json())
-    .then((response) => {
-
-    });
+    .then((response) => {});
 }
 
 async function AcceptRequest(request_id) {
