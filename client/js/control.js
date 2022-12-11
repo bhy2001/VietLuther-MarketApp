@@ -14,13 +14,13 @@ async function SignUp() {
   let password = document.getElementById("password").value;
   let confirmPassword = document.getElementById("password-cf").value;
   let warn_msg = document.getElementById("message");
-  while (password != confirmPassword) {
-    let warn_msg = document.createElement("div");
-    warn_msg.innerHTML = "<p>The two passwords don't match</p>";
-    warn_msg.setAttribute("class", "");
-    filebody = document;
-    password;
-  }
+  // while (password != confirmPassword) {
+  //   let warn_msg = document.createElement("div");
+  //   warn_msg.innerHTML = "<p>The two passwords don't match</p>";
+  //   warn_msg.setAttribute("class", "");
+  //   filebody = document;
+  //   password;
+  // }
   
   // console.log(
   //   SERVER_URL +
@@ -34,6 +34,7 @@ async function SignUp() {
     .then((response) => {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
+        warn_msg.setAttribute("class","alert alert-danger");
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
@@ -58,6 +59,7 @@ async function SignIn() {
     .then((response) => {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
+        warn_msg.setAttribute("class","alert alert-danger");
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
