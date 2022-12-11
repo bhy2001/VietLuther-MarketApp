@@ -28,7 +28,6 @@ async function SignUp() {
   let request = await fetch(
     SERVER_URL +
       `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
-      `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
   )
     .then((response) => response.json())
     .then((response) => {
@@ -37,7 +36,6 @@ async function SignUp() {
         warn_msg.setAttribute("class", "alert alert-danger");
       } else {
         if (response["status"] == "Successful") {
-          let userName = response["currentUserName"];
           let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
@@ -62,7 +60,6 @@ async function SignIn() {
         warn_msg.setAttribute("class", "alert alert-danger");
       } else {
         if (response["status"] == "Successful") {
-          let userName = response["currentUserName"];
           let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
@@ -110,6 +107,7 @@ async function CreateRequest() {
   )
     .then((response) => response.json())
     .then((response) => {});
+  }
 }
 
 async function SeeAllRequests() {
