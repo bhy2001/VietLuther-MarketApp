@@ -28,6 +28,7 @@ async function SignUp() {
   let request = await fetch(
     SERVER_URL +
       `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
+      `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
   )
     .then((response) => response.json())
     .then((response) => {
@@ -37,8 +38,10 @@ async function SignUp() {
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
+          let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
+          IdContainer.innerText = userName.toString();
           IdContainer.innerText = userName.toString();
         }
       }
@@ -60,8 +63,10 @@ async function SignIn() {
       } else {
         if (response["status"] == "Successful") {
           let userName = response["currentUserName"];
+          let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
+          IdContainer.innerText = userName.toString();
           IdContainer.innerText = userName.toString();
         }
       }
@@ -71,6 +76,8 @@ async function SignIn() {
 async function CreateRequest() {
   let items = document.getElementById("item_list");
   let jsonlist = {};
+  if (items.children.length == 0) return;
+  for (const child of items.children) {
   if (items.children.length == 0) return;
   for (const child of items.children) {
     let child_string = child.innerText;
@@ -150,7 +157,9 @@ async function RemoveRequest(request_id) {
     JsonObj
   )
     .then((response) => response.json())
-    .then((response) => {});
+    .then((response) => {
+
+    });
 }
 
 async function AcceptRequest(request_id) {
