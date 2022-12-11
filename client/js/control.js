@@ -21,6 +21,7 @@ async function SignUp() {
     filebody = document;
     password;
   }
+  
   // console.log(
   //   SERVER_URL +
   //     `/api/signup?username=${username}&student_id=${studentid}&email=${email}&phone_number=${phonenumber}&password=${password}&confirmPassword=${confirmPassword}`
@@ -35,10 +36,10 @@ async function SignUp() {
         warn_msg.innerText = response["error"].toString();
       } else {
         if (response["status"] == "Successful") {
-          let userId = response["currentUserID"];
+          let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userId.toString();
+          IdContainer.innerText = userName.toString();
         }
       }
     });
@@ -59,23 +60,28 @@ async function SignIn() {
         warn_msg.innerText = response["error"].toString();
       } else {
         if (response["status"] == "Successful") {
-          let userId = response["currentUserID"];
+          let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userId.toString();
+          IdContainer.innerText = userName.toString();
         }
       }
     });
 }
 
 async function CreateRequest() {
-  let itemlist = document.getElementById("item_list");
-  if (itemlist.children.length == 0) return;
+  let items = document.getElementById("item_list");
   let jsonlist = {};
-  for (const child of itemlist.children) {
+  if (items.children.length == 0) return;
+  for (const child of items.children) {
     let child_string = child.innerText;
     const child_array = child_string.split(",");
     jsonlist[`"${child_array[0]}"`] = child_array[1];
+  }
+  const BodyObj = jsonlist.JSON.stringify();
+  const SendObj = {
+    method: 'POST',
+    body: BodyObj
   }
   let tprice = parseInt(document.getElementById("total-price"));
   let userid = parseInt(document.getElementById("username"));
@@ -90,7 +96,8 @@ async function CreateRequest() {
     time = time + month + date + year;
   }
   let request = await fetch(
-    SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`
+    SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`,
+    SendObj
   )
     .then((response) => response.json())
     .then((response) => {});
@@ -119,6 +126,12 @@ async function SeeAllRequests() {
           let price = document.createElement("td");
           price.innerText = data.price;
           row.appendChild(price);
+          let acceptbutton = document.createElement("td");
+          acceptbutton.innerHTML = `<button class="btn" onclick="AcceptRequest(${data.request_id})">Accept It</button>`;
+          row.appendChild(acceptbutton);
+          let deletebutton = document.createElement("td");
+          deletebutton.innerHTML = `<button class="btn" onclick="RemoveRequest(${data.request_id})">Accept It</button>`;
+          row.appendChild(deletebutton);
           tablebody.appendChild(row);
         }
       }
@@ -126,9 +139,15 @@ async function SeeAllRequests() {
 }
 
 async function RemoveRequest(request_id) {
-  let request = await fetch(SERVER_URL + `/api/request/remove/${request_id}`)
+  JsonObj = {
+    method:'POST',
+    body: JSON.stringify(request_id)
+  }
+  let request = await fetch(SERVER_URL + `/api/request/remove/${request_id}`,JsonObj)
     .then((response) => response.json())
-    .then((response) => {});
+    .then((response) => {
+
+    });
 }
 
 async function AcceptRequest(request_id) {
