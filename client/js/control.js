@@ -3,7 +3,8 @@
 /* jshint browser: true */
 "use strict";
 
-const SERVER_URL = "http://kevin00co.pythonanywhere.com";
+// const SERVER_URL = "http://kevin00co.pythonanywhere.com";
+const SERVER_URL = "http://127.0.0.1:5000";
 
 async function SignUp() {
   let username = document.getElementById("username").value;
@@ -35,7 +36,7 @@ async function SignUp() {
         warn_msg.innerText = response["error"].toString();
         warn_msg.setAttribute("class", "alert alert-danger");
       } else {
-        if (response["status"] == "Successful") {
+        if (response.status == "Successful") {
           let userName = response["currentUserName"];
           window.location.href = "base.html";
           let IdContainer = document.getElementById("username");
@@ -49,24 +50,25 @@ async function SignUp() {
 async function SignIn() {
   let username = document.getElementById("username").value;
   let password = document.getElementById("password").value;
-  // console.log(
-  //   `SERVER_URL + `/api/signin?username=${username}&password=${password}`
-  // );
+  console.log(SERVER_URL + `/api/signin/${username}/${password}`);
+  let SendObj = {};
   let request = await fetch(SERVER_URL + `/api/signin/${username}/${password}`)
     .then((response) => response.json())
     .then((response) => {
-      if (response.hasOwnProperty("error")) {
-        warn_msg.innerText = response["error"].toString();
-        warn_msg.setAttribute("class", "alert alert-danger");
-      } else {
-        if (response["status"] == "Successful") {
-          let userName = response["currentUserName"];
-          window.location.href = "base.html";
-          let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userName.toString();
-          IdContainer.innerText = userName.toString();
-        }
-      }
+      // if (response.hasOwnProperty("error")) {
+      //   warn_msg.innerText = response["error"].toString();
+      //   warn_msg.setAttribute("class", "alert alert-danger");
+      // } else {
+      //   if (response.status == "Successful") {
+      //     console.log(response.status);
+      //     let userName = response["currentUserName"];
+      //     window.location.href = "base.html";
+      //     let IdContainer = document.getElementById("username");
+      //     IdContainer.innerText = userName.toString();
+      //     IdContainer.innerText = userName.toString();
+      //   }
+      // }
+      console.log(response);
     });
 }
 
