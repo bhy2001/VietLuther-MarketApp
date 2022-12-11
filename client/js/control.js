@@ -5,6 +5,8 @@
 
 // const SERVER_URL = "http://kevin00co.pythonanywhere.com";
 const SERVER_URL = "http://127.0.0.1:5000";
+var USERNAME = "";
+var USERID = "";
 
 async function SignUp() {
   let username = document.getElementById("username").value;
@@ -37,11 +39,9 @@ async function SignUp() {
         warn_msg.setAttribute("class", "alert alert-danger");
       } else {
         if (response.status == "Successful") {
-          let userName = response["currentUserName"];
-          window.location.href = "base.html";
-          let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userName.toString();
-          IdContainer.innerText = userName.toString();
+          USERNAME = response["currentUserName"];
+          USERID = response["currentUserID"];
+          location = "./base.html";
         }
       }
     });
@@ -50,6 +50,7 @@ async function SignUp() {
 async function SignIn() {
   let username = document.getElementById("username").value;
   let password = document.getElementById("password").value;
+  let warn_msg = document.getElementById("message");
   console.log(SERVER_URL + `/api/signin/${username}/${password}`);
   let SendObj = {};
   let request = await fetch(SERVER_URL + `/api/signin/${username}/${password}`)
@@ -58,15 +59,11 @@ async function SignIn() {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
         warn_msg.setAttribute("class", "alert alert-danger");
-      } else {
-        if (response["status"] == "Successful") {
-          let userName = response["currentUserName"];
-          
-          let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userName.toString();
-          IdContainer.innerText = userName.toString();
-          window.location.href = "./base.html";
-        }
+      }
+      if (response["status"] == "Successful") {
+        USERNAME = response["currentUserName"];
+        USERID = response["currentUserID"];
+        location = "./base.html";
       }
     });
 }
@@ -120,7 +117,35 @@ async function SeeAllRequests() {
     .then((response) => response.json())
     .then((response) => {
       console.log(response);
-      let tablebody = document.querySelector("#table > tbody");
+      let table = document.querySelector("#table");
+      let tablehead = document.createElement("thead");
+      let headrow = document.createElement("tr");
+
+      let userhead = document.createElement("th");
+      userhead.innerText = "Username";
+      headrow.appendChild(userhead);
+
+      let statushead = document.createElement("th");
+      statushead.innerText = "Request Status";
+      headrow.appendChild(statushead);
+
+      let pricehead = document.createElement("th");
+      pricehead.innerText = "Price";
+      headrow.appendChild(pricehead);
+
+      let accepthead = document.createElement("th");
+      accepthead.innerText = "Accept";
+      headrow.appendChild(accepthead);
+
+      let removehead = document.createElement("th");
+      removehead.innerText = "Remove";
+      headrow.appendChild(removehead);
+
+      tablehead.appendChild(headrow);
+      table.appendChild(tablehead);
+
+      let tablebody = document.createElement("tbody");
+      table.appendChild(tablebody);
       tablebody.innerHTML = "";
       console.log(tablebody.innerHTML);
       if (response.fectch_reqstatus == "Successful") {
@@ -136,10 +161,10 @@ async function SeeAllRequests() {
           price.innerText = data.price;
           row.appendChild(price);
           let acceptbutton = document.createElement("td");
-          acceptbutton.innerHTML = `<button class="btn" onclick="AcceptRequest(${data.request_id})">Accept It</button>`;
+          acceptbutton.innerHTML = `<button class="btn btn-outline-primary" onclick="AcceptRequest(${data.request_id})">Accept It</button>`;
           row.appendChild(acceptbutton);
           let deletebutton = document.createElement("td");
-          deletebutton.innerHTML = `<button class="btn" onclick="RemoveRequest(${data.request_id})">Accept It</button>`;
+          deletebutton.innerHTML = `<button class="btn btn-outline-primary" onclick="RemoveRequest(${data.request_id})">Remove It</button>`;
           row.appendChild(deletebutton);
           tablebody.appendChild(row);
         }
@@ -194,6 +219,13 @@ function AddItem() {
   totalprice = totalprice + price;
   document.getElementById("total-price").innerText = `${totalprice}`;
 }
-window.onload = function (){
-  
+window.onload = function () {};
+
+async function SignOut() {
+  let request = await fetch(SERVER_URL + `/api/logout`)
+    .then((response) => response.json())
+    .then((response) => {
+      USERID = "";
+      USERNAME = "";
+    });
 }
