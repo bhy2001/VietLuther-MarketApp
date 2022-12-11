@@ -3,26 +3,7 @@
 /* jshint browser: true */
 "use strict";
 
-const SERVER_URL = "http://kevin00co.pythonanywhere.com/";
-
-async function SignUp() {
-  let username = document.getElementById("username").value;
-  let studentid = document.getElementById("student-id").value;
-  let email = document.getElementById("email").value;
-  let phonenumber = document.getElementById("phone-number").value;
-  let password = document.getElementById("password").value;
-  let confirmPassword = document.getElementById("password-cf").value;
-  // console.log(
-  //   SERVER_URL +
-  //     `/api/signup?username=${username}&student_id=${studentid}&email=${email}&phone_number=${phonenumber}&password=${password}&confirmPassword=${confirmPassword}`
-  // );
-  let request = await fetch(
-    SERVER_URL +
-      `/api/signup/?username=${username}&student_id=${studentid}&email=${email}&phone_number=${phonenumber}&password=${password}&confirmPassword=${confirmPassword}`
-  )
-    .then((response) => response.json())
-    .then((response) => {});
-}
+const SERVER_URL = "http://kevin00co.pythonanywhere.com";
 
 async function SignUp() {
   let username = document.getElementById("username").value;
@@ -32,31 +13,33 @@ async function SignUp() {
   let password = document.getElementById("password").value;
   let confirmPassword = document.getElementById("password-cf").value;
   let warn_msg = document.getElementById("message");
-  while (password != confirmPassword) {
-    let warn_msg = document.createElement("div");
-    warn_msg.innerHTML = "<p>The two passwords don't match</p>";
-    warn_msg.setAttribute("class", "");
-    filebody = document;
-    password;
-  }
+  // while (password != confirmPassword) {
+  //   let warn_msg = document.createElement("div");
+  //   warn_msg.innerHTML = "<p>The two passwords don't match</p>";
+  //   warn_msg.setAttribute("class", "");
+  //   filebody = document;
+  //   password;
+  // }
+
   // console.log(
   //   SERVER_URL +
   //     `/api/signup?username=${username}&student_id=${studentid}&email=${email}&phone_number=${phonenumber}&password=${password}&confirmPassword=${confirmPassword}`
   // );
   let request = await fetch(
     SERVER_URL +
-      `/api/signup?username=${username}&student_id=${studentid}&email=${email}&phone_number=${phonenumber}&password=${password}&confirmPassword=${confirmPassword}`
+      `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
   )
     .then((response) => response.json())
     .then((response) => {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
+        warn_msg.setAttribute("class", "alert alert-danger");
       } else {
         if (response["status"] == "Successful") {
-          let userId = response["currentUserID"];
+          let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userId.toString();
+          IdContainer.innerText = userName.toString();
         }
       }
     });
@@ -68,35 +51,41 @@ async function SignIn() {
   // console.log(
   //   `SERVER_URL + `/api/signin?username=${username}&password=${password}`
   // );
-  let request = await fetch(
-    SERVER_URL + `/api/signin?username=${username}&password=${password}`
-  )
+  let request = await fetch(SERVER_URL + `/api/signin/${username}/${password}`)
     .then((response) => response.json())
     .then((response) => {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
+        warn_msg.setAttribute("class", "alert alert-danger");
       } else {
         if (response["status"] == "Successful") {
-          let userId = response["currentUserID"];
+          let userName = response["currentUserName"];
           window.location.href = "index.html";
           let IdContainer = document.getElementById("username");
-          IdContainer.innerText = userId.toString();
+          IdContainer.innerText = userName.toString();
         }
       }
     });
 }
 
 async function CreateRequest() {
-  let itemlist = document.getElementById("item_list");
-  if (itemlist.children.length == 0) return;
+  let items = document.getElementById("item_list");
   let jsonlist = {};
-  for (const child of itemlist.children) {
+  if (items.children.length == 0) return;
+  for (const child of items.children) {
     let child_string = child.innerText;
     const child_array = child_string.split(",");
     jsonlist[`"${child_array[0]}"`] = child_array[1];
   }
-  let tprice = parseInt(document.getElementById("total-price"));
-  let userid = parseInt(document.getElementById("username"));
+  const BodyObj = JSON.stringify(jsonlist);
+  const SendObj = {
+    method: "POST",
+    body: BodyObj,
+  };
+  let tprice = parseInt(document.getElementById("total-price").innerText);
+  console.log(tprice);
+  let userid = document.getElementById("username").innerText;
+  console.log(userid);
   const d = new Date();
   let year = d.getFullYear();
   let date = d.getDate();
@@ -107,8 +96,10 @@ async function CreateRequest() {
   } else {
     time = time + month + date + year;
   }
+  console.log(`/api/request/add/${userid}/${time}/${tprice}`);
   let request = await fetch(
-    SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`
+    SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`,
+    SendObj
   )
     .then((response) => response.json())
     .then((response) => {});
@@ -137,6 +128,12 @@ async function SeeAllRequests() {
           let price = document.createElement("td");
           price.innerText = data.price;
           row.appendChild(price);
+          let acceptbutton = document.createElement("td");
+          acceptbutton.innerHTML = `<button class="btn" onclick="AcceptRequest(${data.request_id})">Accept It</button>`;
+          row.appendChild(acceptbutton);
+          let deletebutton = document.createElement("td");
+          deletebutton.innerHTML = `<button class="btn" onclick="RemoveRequest(${data.request_id})">Accept It</button>`;
+          row.appendChild(deletebutton);
           tablebody.appendChild(row);
         }
       }
@@ -144,7 +141,14 @@ async function SeeAllRequests() {
 }
 
 async function RemoveRequest(request_id) {
-  let request = await fetch(SERVER_URL + `/api/request/remove/${request_id}`)
+  JsonObj = {
+    method: "POST",
+    body: JSON.stringify(request_id),
+  };
+  let request = await fetch(
+    SERVER_URL + `/api/request/remove/${request_id}`,
+    JsonObj
+  )
     .then((response) => response.json())
     .then((response) => {});
 }

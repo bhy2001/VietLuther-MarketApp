@@ -1,106 +1,80 @@
 #!/usr/bin/env python3
 import os
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
-from flask_cors import CORS, cross_origin
 from config import app, db
-from models import User,item, BuyRequest
+from models import User,item, BuyRequest, ItemSchema, BuyRequestschema
 from utils import hash_pw, check_pw
 
-
-app = Flask(__name__)
-CORS(app=app)
-
 ## sign in 
-@app.route("/api/signin", methods=["GET","POST"])
-@cross_origin()
-def api_user_signin():
-    try:
-        params = request.get_json(force=True)
-        username = params.get("username", "")
-        user_password_input = params.get("password", "")
+@app.route("/api/signin/<string:username>/<string:password>", methods=["GET","POST"])
+def api_user_signin(username:str, password:str):
+    if not username and not password:
+        err = "Invalid login credentials. Please try again."
+    # Connect and fetch data from the users table
+    user_data = User.select(username)
+    # User not found
+    if not user_data:
+        err = "Invalid login credentials. Please try again."
 
-        if username == "" or user_password_input == "":
-            session["error"] = "Invalid login credentials. Please try again."
-            raise Exception(session["error"])
+    user_password_hash = user_data[0].password_hash
 
-        # Connect and fetch data from the users table
-        user_data = User.select(username)
-
-        # User not found
-        if not user_data:
-            session["error"] = "Invalid login credentials. Please try again."
-            raise Exception(session["error"])
-
-        user_password_hash = user_data.password_hash
-
-        if check_pw(user_password_input, user_password_hash):
-            session["user"] = (user_data.id, username)
-            payload = {
-                "status": "Successful",
-                "sessionCookie": "",
-                "currentUserID": user_data.id
-            }
-            return jsonify(payload), 200
-        else:
-            session["error"] = "Invalid login credentials. Please try again."
-            raise Exception(session["error"])
-
-    except Exception as error:
-        return jsonify({"error": "Bad request. " + str(error)}), 404
+    if check_pw(password, user_password_hash):
+        payload = {
+            "status": "Successful",
+            "sessionCookie": "",
+            "currentUserID": user_data[0].id,
+            "currentUserName": user_data[0].username
+        }
+        return jsonify(payload), 200
+    else:
+        err = "Invalid login credentials. Please try again."
+    return jsonify(err)
 
 #logout
 @app.route('/api/logout', methods=["GET","POST"])
 def api_user_logout():
-    session.clear()
+    return "Successfull log out"
 
 #sign up
-@app.route("/api/signup", methods=["GET","POST"])
-@cross_origin()
-def api_user_signup():
-    try:
-        params = request.form
-        username = params.get("username", "")
-        student_id = params.get("student_id", "")
-        email = params.get("email", "")
-        phone_number = params.get("phone_number", "")
-        password = params.get("password", "")
-        confirmPassword = params.get("confirmPassword", "")
+@app.route(
+    "/api/signup/<string:username>/<int:student_id>/<string:email>/<int:phone_number>/<string:password>/<string:confirmPassword>",
+    methods=["GET","POST"])
+def api_user_signup(
+    username: str,student_id: int, email: str,
+    phone_number: int, password: str, confirmPassword:str
+):
+    # Verify password
+    if password != confirmPassword:
+        err = "Password does not match. Please try again."
+        return jsonify(err)
 
+    # Verify username
+    user_data = User.select(username)
+    if user_data is not None:
+        # Username taken
+        err = "Username has been taken. Please try a different username."
+        return jsonify(err)
+        
+    else:
+        # Hash the password
+        password_hash = hash_pw(password)
+        new_user = User(username=username,student_id = student_id, email=email,phone_number =phone_number, password_hash=password_hash)
+        # Add user to the database
+        User.insert(new_user)
 
-        # Verify password
-        if password != confirmPassword:
-            session["error"] = "Password does not match. Please try again."
-            raise Exception(session["error"])
-
-        # Verify username
-        user_data = User.select(username)
-        if user_data is not None:
-            # Username taken
-            session["error"] = "Username has been taken. Please try a different username."
-            raise Exception(session["error"])
-        else:
-            # Hash the password
-            password_hash = hash_pw(password)
-            new_user = User(username=username,student_id = student_id, email=email,phone_number =phone_number, password_hash=password_hash)
-
-            # Add user to the database
-            User.insert(new_user)
-
-            # Create a session for this user
-            session["user"] = (new_user.id, username)
-            payload = {
-                "status": "Successful",
-                "sessionCookie": "",
-                "currentUserID": new_user.id
-            }
-            return jsonify(payload), 200
-
-    except Exception as error:
-        return {"Error": "Bad request. " + str(error)}, 400
+        # Create a session for this user
+        # session["user"] = (new_user.id, username)
+        payload = {
+            "status": "Successful",
+            "sessionCookie": "",
+            "currentUserID": new_user[0].id,
+            "currentUserName": new_user[1].username
+        }
+        return jsonify(payload), 200
 
 # request controler
 # @app.route("/api/request/all", methods=["GET","POST"])
-# @cross_origin()
+# 
 # def get_all_available_request():
 #     try:
 #         all_request_data = BuyRequest.get_all_requests(request_status="available")
@@ -112,20 +86,27 @@ def api_user_signup():
 #         return jsonify({"error": "Bad request. " + str(error)}), 404
 # show your accepted request
 @app.route("/api/request/all", methods=["GET","POST"])
-@cross_origin()
 def get_all_available_request():
-    try:
-        all_request_data = BuyRequest.all_request()
-        if not all_request_data:
-            raise Exception("No request found")
-        return jsonify(all_request_data), 200
+    request = BuyRequest.query.filter(BuyRequest.request_status == "available")    
+    
+    request_schema = BuyRequestschema(many=True)
+    all_request_data = request_schema.dump(request)
+    if not all_request_data:
+        return "No request found"
+    else:
+        all_data = []
+        for i in all_request_data:
+            print (i)
+            items = item.query.filter(item.request_id == i["id"])  
+            item_schema = ItemSchema( many = True)
+            request_items = item_schema.dump(items)
+            all_data.append([i,request_items])
 
-    except Exception as error:
-        return jsonify({"error": "Bad request. " + str(error)}), 404
+        return jsonify(all_data), 200
+
 
 # add new Request
 @app.route("/api/request/add/<int:initiator_id>/<int:request_time>/<int:price>", methods = ["GET","POST"])
-@cross_origin()
 def add_new_request(initiator_id,request_time,price):
     try:
         new_request = BuyRequest(
@@ -152,7 +133,7 @@ def add_new_request(initiator_id,request_time,price):
         return jsonify({"error": "Bad request. " + str(error)}), 404
 
 @app.route("/api/request/remove/<int:request_id>", methods = ["GET","POST"])
-@cross_origin()
+
 def remove_request(request_id:int):
     try:
         request_data = BuyRequest.get_request_by_request_id(request_id=request_id)
@@ -167,7 +148,6 @@ def remove_request(request_id:int):
         return {"Error": "Bad Request." + str(error)}, 400
 
 @app.route("/api/request/accept/<int:request_id>/<int:accepter_id>/<int:accepted_time>", methods = ["GET","POST"])
-@cross_origin()
 def accept_request(request_id:int,accepter_id:int,accepted_time:int):
     try:
         request_data = BuyRequest.get_request_by_request_id(request_id=request_id)
@@ -178,4 +158,3 @@ def accept_request(request_id:int,accepter_id:int,accepted_time:int):
 
     except Exception as error:
         return {"Error": "Bad Request." + str(error)}, 400
-    

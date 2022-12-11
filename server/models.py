@@ -7,7 +7,7 @@ from typing import Union, List
 
 
 
-from sqlalchemy import func, desc, asc, not_, and_, true,update
+from sqlalchemy import func, desc, asc, not_, and_, true,update, select, insert, delete
 from sqlalchemy.sql import label
 from config import db, mm
 
@@ -17,13 +17,10 @@ class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
-    student_id = db.Column(db.String(120), unique=True)
-    email = db.Column(db.String(120), unique=True)
+    student_id = db.Column(db.String(120))
+    email = db.Column(db.String(120))
     phone_number = db.Column(db.String(120))
     password_hash = db.Column(db.String(120))
-
-    initiators = db.relationship("BuyRequest", backref="initiator", foreign_keys="BuyRequest.initiator_id")
-    receivers = db.relationship("BuyRequest", backref="receiver", foreign_keys="BuyRequest.receiver_id")
 
     def __eq__(self, other_user: User) -> bool:
         # Compare two users using its username
@@ -37,7 +34,7 @@ class User(db.Model):
             "student_id": self.student_id,
             "email": self.email,
             "phone_number": self.phone_number,
-            "password_hash": self.password_hash,
+            "password_hash": self.password_hash
         }
         return json.dumps(data)
 
@@ -45,26 +42,23 @@ class User(db.Model):
     @classmethod
     def insert(cls, new_user: User) -> None:
         # Add a new user to the database
-        db.session.add(new_user)
-        db.session.commit()
+        insert(User).values(
+            id = new_user.id,username = new_user.username,
+            student_id = new_user.student_id, email = new_user.email,
+            phone_number = new_user.phone_number, password_hash = new_user.password_hash)
 
     @classmethod
-    def delete(cls, username: str) -> Union[User, None]:
+    def delete(cls, username: str):
         # Delete and return an user from the database. Return None if the user doesn't exist
         user = User.select(username)
         if user:
-            db.session.delete(user)
-            db.session.commit()
+            delete(User).where(User.c.username == username)
         return user
 
     @classmethod
-    def select(cls, username="*", user_id="*", email="*") -> Union[User, None]:
-        user = User.query.filter(and_(
-                User.username == username if username != "*" else true(),
-                User.id == user_id if user_id != "*" else true(),
-                User.email == email if email != "*" else true()
-            )).first()
-        return user
+    def select(cls, username:str):
+        stmt = User.query.filter(User.username == username)
+        return stmt
 
     @classmethod
     def select_v2(cls, filter_option: dict):
@@ -245,83 +239,15 @@ class BuyRequest(db.Model):
 ### ******************************************************** ###
     @classmethod
     def all_request(cls) -> List:
-        # query all requests that send to user_id
-        sub_query = db.session.query(
-                BuyRequest,
-                label("latest_request", func.max(BuyRequest.request_time))
-                ).filter(BuyRequest.request_status == "available").group_by(BuyRequest.id).subquery()
-
-        #query all users that send request to user_id
-        sender_query = db.session.query(
-                User.id,
-                User.username,
-                sub_query.c.id,
-                sub_query.c.initiator_id,
-                sub_query.c.receiver_id,
-                sub_query.c.request_status,
-                sub_query.c.request_time,
-                sub_query.c.price
-                ).join(sub_query, User.id == sub_query.c.initiator_id).order_by(asc(User.id)).all()
-
-        # query all request that user_id send
-        dic = {}
-        request_users_id = []
-
-        # filter request between user_id with another, choose the
-        # request that has latest request_time
-        for i in sender_query:
-            is_receiver = i[0] == i[4]
-            key = tuple(sorted([i[3], i[4]]))
-
-            if i[0] not in request_users_id:
-                request_users_id.append(i[0])
-
-            if key not in dic:
-                dic[key] = {
-                        "user_id": i[0],
-                        "username": i[1],
-                        "request_id": i[2],
-                        "request_status": i[5],
-                        "request_time": i[6],
-                        "price": i[7],
-                        "is_sender": not is_receiver,
-                        "is_receiver": is_receiver
-                        }
-            else:
-                if dic[key]["request_time"] < i[6]:
-                    dic[key] = {
-                            "user_id": i[0],
-                            "username": i[1],
-                            "request_id": i[2],
-                            "request_status": i[5],
-                            "request_time": i[6],
-                            "price": i[7],
-                            "is_sender": not is_receiver,
-                            "is_receiver": is_receiver
-                            }
-
-        result = list(dic.values())
-        return result
-
+        all_requests = BuyRequest.query.filter(
+            BuyRequest.request_status == "available"
+        )
+        print(all_requests)
+        result = []
+        for i in all_requests:
+            result.append(i)
+        # return result
 ### ******************************************************** ###
-
-        # all_requests = BuyRequest.query.filter(
-        #         BuyRequest.request_status == "available",
-        #         ).order_by(BuyRequest.id.asc()).all()
-
-        # all_requests_list = []
-
-        # for request in all_requests:
-        #     all_requests_list.append({
-        #             "id": request.id,
-        #             "initiator_id": request.initiator_id,
-        #             "receiver_id": request.receiver_id,
-        #             "request_status": request.request_status,
-        #             "request_time": request.request_time,
-        #             "accepted_time": request.accepted_time,
-        #             "price": request.price
-        #         })
-        # return all_requests_list
 
     @classmethod
     def get_all_request_by_sender(cls, initiator_id: int, request_status: str) -> list:
@@ -482,7 +408,7 @@ class BuyRequestschema(mm.SQLAlchemyAutoSchema):
         model = BuyRequest
         load_instance = True
 
-class itemschema(mm.SQLAlchemyAutoSchema):
+class ItemSchema(mm.SQLAlchemyAutoSchema):
     class Meta:
         model = item
         load_instance = True
