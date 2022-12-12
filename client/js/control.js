@@ -36,7 +36,17 @@ async function SignUp() {
     .then((response) => {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
-        warn_msg.setAttribute("class", "alert alert-danger");
+        warn_msg.setAttribute(
+          "class",
+          "container d-flex justify-content-center"
+        );
+        warn_msg.classList.add("alert");
+        warn_msg.classList.add("alert-danger");
+        setTimeout(() => {
+          warn_msg.classList.remove("alert");
+          warn_msg.classList.remove("alert-danger");
+          warn_msg.innerText = "";
+        }, 2000);
       } else {
         if (response.status == "Successful") {
           USERNAME = response["currentUserName"];
@@ -58,7 +68,17 @@ async function SignIn() {
     .then((response) => {
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
-        warn_msg.setAttribute("class", "alert alert-danger");
+        warn_msg.setAttribute(
+          "class",
+          "container d-flex justify-content-center"
+        );
+        warn_msg.classList.add("alert");
+        warn_msg.classList.add("alert-danger");
+        setTimeout(() => {
+          warn_msg.classList.remove("alert");
+          warn_msg.classList.remove("alert-danger");
+          warn_msg.innerText = "";
+        }, 2000);
       }
       if (response["status"] == "Successful") {
         localStorage.setItem("UserName", response["currentUserName"]);
@@ -96,10 +116,10 @@ async function CreateRequest() {
   items.innerHTML = "Item list (if any)";
   let totalprice = document.getElementById("total-price");
   totalprice.innerHTML = "0";
-  console.log(
-    SERVER_URL +
-      `/api/request/add/${localStorage.getItem("UserID")}/${time}/${tprice}`
-  );
+  // console.log(
+  //   SERVER_URL +
+  //     `/api/request/add/${localStorage.getItem("UserID")}/${time}/${tprice}`
+  // );
   console.log(SendObj);
   let request = await fetch(
     SERVER_URL +
@@ -108,6 +128,7 @@ async function CreateRequest() {
   )
     .then((response) => response.json())
     .then((response) => {
+      console.log(response);
       if (response["status"] == "Successful") {
         let message = "Request Created";
         console.log(message);
@@ -230,16 +251,16 @@ async function AcceptRequest(request_id) {
 }
 
 function AddItem() {
-  let item = document.getElementById("item").value;
+  let item = document.getElementById("item");
   if (item == "") return;
-  let quantity = document.getElementById("quantity").value;
+  let quantity = document.getElementById("quantity");
   if (quantity == "") return;
-  let price = document.getElementById("price").value;
+  let price = document.getElementById("price");
   if (price == "") return;
-  price = parseInt(price);
+  price = parseInt(price.value);
   let listingtop = document.getElementById("item_list");
   let listing = document.createElement("li");
-  listing.innerText = `${item},${quantity}`;
+  listing.innerText = `${item.value},${quantity.value}`;
   listingtop.appendChild(listing);
   let totalprice = parseInt(document.getElementById("total-price").innerText);
   totalprice = totalprice + price;
