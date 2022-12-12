@@ -184,7 +184,17 @@ async function RemoveRequest(request_id) {
     SERVER_URL + `/api/request/remove/${request_id.toString()}`,
     JsonObj
   ).then((response) => {
-    console.log(response);
+    if (response.status == "200") {
+      let msg = document.querySelector("#message");
+      msg.innerText = "Request (seems to be) Removed. Thank you";
+      msg.classList.add("alert");
+      msg.classList.add("alert-success");
+      setTimeout(() => {
+        msg.classList.remove("alert");
+        msg.classList.remove("alert-success");
+        msg.innerText = "";
+      }, 2000);
+    }
   });
 }
 
@@ -205,9 +215,20 @@ async function AcceptRequest(request_id) {
         "UserID"
       )}/${time}`
   ).then((response) => {
-    console.log(response);
+    if (response.status == "200") {
+      let msg = document.querySelector("#message");
+      msg.innerText = "Request (seems to be) accepted. Thank you";
+      msg.classList.add("alert");
+      msg.classList.add("alert-success");
+      setTimeout(() => {
+        msg.classList.remove("alert");
+        msg.classList.remove("alert-success");
+        msg.innerText = "";
+      }, 2000);
+    }
   });
 }
+
 function AddItem() {
   let item = document.getElementById("item").value;
   if (item == "") return;
