@@ -61,8 +61,8 @@ async function SignIn() {
         warn_msg.setAttribute("class", "alert alert-danger");
       }
       if (response["status"] == "Successful") {
-        USERNAME = response["currentUserName"];
-        USERID = response["currentUserID"];
+        localStorage.setItem("UserName", response["currentUserName"]);
+        localStorage.setItem("UserID", response["currentUserID"]);
         location = "./base.html";
       }
     });
@@ -75,54 +75,59 @@ async function CreateRequest() {
   };
   SendObj["body"] = {};
   if (items.children.length == 0) return;
+  if (items.children.length == 0) return;
   for (const child of items.children) {
-    if (items.children.length == 0) return;
-    for (const child of items.children) {
-      let child_string = child.innerText;
-      child_string = child_string.toString();
-      const child_array = child_string.split(",");
-      console.log(child_array);
-      SendObj["body"][child_array[0]] = child_array[1];
-    }
-    console.log(SendObj);
-    let tprice = parseInt(document.getElementById("total-price").innerText);
-    console.log(tprice);
-    let userid = document.getElementById("username").innerText;
-    console.log(userid);
-    const d = new Date();
-    let year = d.getFullYear();
-    let date = d.getDate();
-    let month = d.getMonth();
-    let time = "";
-    if (date < 10) {
-      time = time + month + "0" + date + year;
-    } else {
-      time = time + month + date + year;
-    }
-    console.log(`/api/request/add/${userid}/${time}/${tprice}`);
-    let request = await fetch(
-      SERVER_URL + `/api/request/add/${userid}/${time}/${tprice}`,
-      SendObj
-    )
-      .then((response) => response.json())
-      .then((response) => {});
+    let child_string = child.innerText;
+    child_string = child_string.toString();
+    const child_array = child_string.split(",");
+    SendObj["body"][child_array[0]] = child_array[1];
   }
+  let tprice = parseInt(document.getElementById("total-price").innerText);
+  const d = new Date();
+  let year = d.getFullYear();
+  let date = d.getDate();
+  let month = d.getMonth();
+  let time = "";
+  if (date < 10) {
+    time = time + month + "0" + date + year;
+  } else {
+    time = time + month + date + year;
+  }
+  items.innerHTML = "Item list (if any)";
+  let totalprice = document.getElementById("total-price");
+  totalprice.innerHTML = "0";
+  console.log(
+    SERVER_URL +
+      `/api/request/add/${localStorage.getItem("UserID")}/${time}/${tprice}`
+  );
+  console.log(SendObj);
+  let request = await fetch(
+    SERVER_URL +
+      `/api/request/add/${localStorage.getItem("UserID")}/${time}/${tprice}`,
+    SendObj
+  )
+    .then((response) => response.json())
+    .then((response) => {
+      if (response["status"] == "Successful") {
+        let message = "Request Created";
+        console.log(message);
+      }
+    });
 }
 
 async function SeeAllRequests() {
   let request = await fetch(
-    // SERVER_URL + `/api/request/all`
-    "json-test/all_request_sample.JSON"
+    SERVER_URL + `/api/request/all`
+    // "json-test/all_request_sample.JSON"
   )
     .then((response) => response.json())
     .then((response) => {
-      console.log(response);
       let table = document.querySelector("#table");
       let tablehead = document.createElement("thead");
       let headrow = document.createElement("tr");
 
       let userhead = document.createElement("th");
-      userhead.innerText = "Username";
+      userhead.innerText = "Request ID";
       headrow.appendChild(userhead);
 
       let statushead = document.createElement("th");
@@ -147,45 +152,44 @@ async function SeeAllRequests() {
       let tablebody = document.createElement("tbody");
       table.appendChild(tablebody);
       tablebody.innerHTML = "";
-      console.log(tablebody.innerHTML);
-      if (response.fectch_reqstatus == "Successful") {
-        for (const data of response.data) {
-          let row = document.createElement("tr");
-          let user = document.createElement("td");
-          user.innerText = data.user_id;
-          row.appendChild(user);
-          let reqstat = document.createElement("td");
-          reqstat.innerText = data.request_status;
-          row.appendChild(reqstat);
-          let price = document.createElement("td");
-          price.innerText = data.price;
-          row.appendChild(price);
-          let acceptbutton = document.createElement("td");
-          acceptbutton.innerHTML = `<button class="btn btn-outline-primary" onclick="AcceptRequest(${data.request_id})">Accept It</button>`;
-          row.appendChild(acceptbutton);
-          let deletebutton = document.createElement("td");
-          deletebutton.innerHTML = `<button class="btn btn-outline-primary" onclick="RemoveRequest(${data.request_id})">Remove It</button>`;
-          row.appendChild(deletebutton);
-          tablebody.appendChild(row);
-        }
+      for (const data of response) {
+        console.log(data[0]);
+        let row = document.createElement("tr");
+        let user = document.createElement("td");
+        user.innerText = data[0].id;
+        row.appendChild(user);
+        let reqstat = document.createElement("td");
+        reqstat.innerText = data[0].request_status;
+        row.appendChild(reqstat);
+        let price = document.createElement("td");
+        price.innerText = data[0].price;
+        row.appendChild(price);
+        let acceptbutton = document.createElement("td");
+        acceptbutton.innerHTML = `<button class="btn btn-outline-primary" onclick="AcceptRequest(${data[0].id})">Accept It</button>`;
+        row.appendChild(acceptbutton);
+        let deletebutton = document.createElement("td");
+        deletebutton.innerHTML = `<button class="btn btn-outline-primary" onclick="RemoveRequest(${data[0].id})">Remove It</button>`;
+        row.appendChild(deletebutton);
+        tablebody.appendChild(row);
       }
     });
 }
 
 async function RemoveRequest(request_id) {
-  JsonObj = {
+  const JsonObj = {
     method: "POST",
     body: JSON.stringify(request_id),
   };
   let request = await fetch(
-    SERVER_URL + `/api/request/remove/${request_id}`,
+    SERVER_URL + `/api/request/remove/${request_id.toString()}`,
     JsonObj
-  )
-    .then((response) => response.json())
-    .then((response) => {});
+  ).then((response) => {
+    console.log(response);
+  });
 }
 
 async function AcceptRequest(request_id) {
+  let d = new Date();
   let year = d.getFullYear();
   let date = d.getDate();
   let month = d.getMonth();
@@ -195,14 +199,15 @@ async function AcceptRequest(request_id) {
   } else {
     time = time + month + date + year;
   }
-  let userid = parseInt(document.getElementById("username"));
   let request = await fetch(
-    SERVER_URL + `/api/request/accept/${request_id}/${userid}/${time}`
-  )
-    .then((response) => response.json())
-    .then((response) => {});
+    SERVER_URL +
+      `/api/request/accept/${request_id}/${localStorage.getItem(
+        "UserID"
+      )}/${time}`
+  ).then((response) => {
+    console.log(response);
+  });
 }
-
 function AddItem() {
   let item = document.getElementById("item").value;
   if (item == "") return;
@@ -219,13 +224,15 @@ function AddItem() {
   totalprice = totalprice + price;
   document.getElementById("total-price").innerText = `${totalprice}`;
 }
-window.onload = function () {};
 
 async function SignOut() {
-  let request = await fetch(SERVER_URL + `/api/logout`)
-    .then((response) => response.json())
-    .then((response) => {
-      USERID = "";
-      USERNAME = "";
-    });
+  let request = await fetch(SERVER_URL + `/api/logout`).then((response) => {
+    localStorage.clear();
+    location = "./index.html";
+  });
+}
+
+function showUserName() {
+  let showdiv = document.querySelector("#username");
+  showdiv.innerText = localStorage.getItem("UserName");
 }
