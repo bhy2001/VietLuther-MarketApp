@@ -16,24 +16,17 @@ async function SignUp() {
   let password = document.getElementById("password").value;
   let confirmPassword = document.getElementById("password-cf").value;
   let warn_msg = document.getElementById("message");
-  // while (password != confirmPassword) {
-  //   let warn_msg = document.createElement("div");
-  //   warn_msg.innerHTML = "<p>The two passwords don't match</p>";
-  //   warn_msg.setAttribute("class", "");
-  //   filebody = document;
-  //   password;
-  // }
-
-  // console.log(
-  //   SERVER_URL +
-  //     `/api/signup?username=${username}&student_id=${studentid}&email=${email}&phone_number=${phonenumber}&password=${password}&confirmPassword=${confirmPassword}`
-  // );
+  console.log(
+    SERVER_URL +
+      `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
+  );
   let request = await fetch(
     SERVER_URL +
       `/api/signup/${username}/${studentid}/${email}/${phonenumber}/${password}/${confirmPassword}`
   )
     .then((response) => response.json())
     .then((response) => {
+      console.log(response);
       if (response.hasOwnProperty("error")) {
         warn_msg.innerText = response["error"].toString();
         warn_msg.setAttribute(
@@ -52,6 +45,19 @@ async function SignUp() {
           USERNAME = response["currentUserName"];
           USERID = response["currentUserID"];
           location = "./base.html";
+        } else {
+          warn_msg.innerText = response.toString();
+          warn_msg.setAttribute(
+            "class",
+            "container d-flex justify-content-center"
+          );
+          warn_msg.classList.add("alert");
+          warn_msg.classList.add("alert-danger");
+          setTimeout(() => {
+            warn_msg.classList.remove("alert");
+            warn_msg.classList.remove("alert-danger");
+            warn_msg.innerText = "";
+          }, 2000);
         }
       }
     });
@@ -62,7 +68,6 @@ async function SignIn() {
   let password = document.getElementById("password").value;
   let warn_msg = document.getElementById("message");
   console.log(SERVER_URL + `/api/signin/${username}/${password}`);
-  let SendObj = {};
   let request = await fetch(SERVER_URL + `/api/signin/${username}/${password}`)
     .then((response) => response.json())
     .then((response) => {
@@ -84,11 +89,30 @@ async function SignIn() {
         localStorage.setItem("UserName", response["currentUserName"]);
         localStorage.setItem("UserID", response["currentUserID"]);
         location = "./base.html";
+      } else {
+        warn_msg.innerText = response.toString();
+        warn_msg.setAttribute(
+          "class",
+          "container d-flex justify-content-center"
+        );
+        warn_msg.classList.add("alert");
+        warn_msg.classList.add("alert-danger");
+        setTimeout(() => {
+          warn_msg.classList.remove("alert");
+          warn_msg.classList.remove("alert-danger");
+          warn_msg.innerText = "";
+        }, 2000);
       }
     });
 }
 
 async function CreateRequest() {
+  let item = document.getElementById("item");
+  item.value = "";
+  let quantity = document.getElementById("quantity");
+  quantity.value = "";
+  let price = document.getElementById("price");
+  price.value = "";
   let items = document.getElementById("item_list");
   const SendObj = {
     method: "POST",
@@ -128,10 +152,28 @@ async function CreateRequest() {
   )
     .then((response) => response.json())
     .then((response) => {
-      console.log(response);
+      let msg = document.querySelector("#message");
       if (response["status"] == "Successful") {
-        let message = "Request Created";
-        console.log(message);
+        msg.innerText = "Request (seems to have been) Created. Thank you";
+        msg.classList.add("alert");
+        msg.classList.add("alert-success");
+        setTimeout(() => {
+          msg.classList.remove("alert");
+          msg.classList.remove("alert-success");
+          msg.innerText = "";
+        }, 2000);
+      } else {
+        console.log(response);
+        msg.innerText =
+          "Something unexpected happened. Sorry for this Inconvenience";
+        msg.setAttribute("class", "container d-flex justify-content-center");
+        msg.classList.add("alert");
+        msg.classList.add("alert-danger");
+        setTimeout(() => {
+          msg.classList.remove("alert");
+          msg.classList.remove("alert-danger");
+          msg.innerText = "";
+        }, 2000);
       }
     });
 }
@@ -174,7 +216,6 @@ async function SeeAllRequests() {
       table.appendChild(tablebody);
       tablebody.innerHTML = "";
       for (const data of response) {
-        console.log(data[0]);
         let row = document.createElement("tr");
         let user = document.createElement("td");
         user.innerText = data[0].id;

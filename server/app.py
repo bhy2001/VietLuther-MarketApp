@@ -130,9 +130,9 @@ def add_new_request(initiator_id,request_time,price):
         # print(items)
         if not items:
             raise Exception ("bad Json")
-        for i in items:
+        for i in items.body:
             new_item = item(request_id=request_id,item_name= i, item_quanity = items.i)
-            item.insert(new_item==new_item)
+            item.insert(new_item=new_item)
         payload = {
                 "status": "Successful",
                 "sessionCookie": "",
