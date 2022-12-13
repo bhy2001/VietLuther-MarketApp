@@ -3,8 +3,8 @@
 /* jshint browser: true */
 "use strict";
 
-// const SERVER_URL = "http://kevin00co.pythonanywhere.com";
-const SERVER_URL = "http://127.0.0.1:5000";
+const SERVER_URL = "http://kevin00co.pythonanywhere.com";
+// const SERVER_URL = "http://127.0.0.1:5000";
 var USERNAME = "";
 var USERID = "";
 
@@ -192,6 +192,7 @@ async function SeeAllRequests() {
     .then((response) => response.json())
     .then((response) => {
       let table = document.querySelector("#table");
+      table.innerHTML = "";
       let tablehead = document.createElement("thead");
       let headrow = document.createElement("tr");
 
