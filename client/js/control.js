@@ -60,6 +60,9 @@ async function SignUp() {
           }, 2000);
         }
       }
+    })
+    .then((error) => {
+      console.log(error);
     });
 }
 
@@ -175,6 +178,9 @@ async function CreateRequest() {
           msg.innerText = "";
         }, 2000);
       }
+    })
+    .then((error) => {
+      console.log(error);
     });
 }
 
